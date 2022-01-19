@@ -1,29 +1,70 @@
 ﻿
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
+using TEstt;
+//return get
+async Task<string> JSonAsync()
+{
 
 HttpClient client = new HttpClient();
 HttpResponseMessage response = await client.GetAsync("https://tester.consimple.pro/");
 
-
 response.EnsureSuccessStatusCode();
-string responseBody = await response.Content.ReadAsStringAsync();
+return await response.Content.ReadAsStringAsync();
+}
+
+void ShowModel(Json Json)
+{
+    Console.WriteLine("Products");
+    foreach (var item in Json.Products)
+    {
+        Console.WriteLine("------------------");
+        Console.WriteLine($"Id:{item.Id}");
+        Console.WriteLine($"Name:{item.Name}");
+        Console.WriteLine($"CategoryId:{item.CategoryId}");
+        Console.WriteLine("----------------------");
+    };
+    Console.WriteLine("Categories");
+    foreach (var item in Json.Categories)
+    {
+        Console.WriteLine("----------------------");
+        Console.WriteLine($"Name:{item.Name}");
+        Console.WriteLine($"Id:{item.Id}");
+        Console.WriteLine("-------------------");
+    }
+}
 
 
-Console.WriteLine($"Отправить гет запрос ведите (1)" +
-    $"Выйти нажмите (2)");
+string responseBody = JSonAsync().Result;
+//Console.WriteLine(responseBody);
+Json account = JsonConvert.DeserializeObject<Json>(responseBody);
 
-string answer = Console.ReadLine();
+string json = JsonConvert.SerializeObject(account, Formatting.Indented);
+
+
+while (true)
+{
+    Console.WriteLine("1=Десерилизовать ,2= Серелизировать,3=сотановить");
+    string answer = Console.ReadLine();
 
     if (answer == "1")
     {
-    Console.WriteLine(JToken.Parse(responseBody).ToString());
-        
+        ShowModel(account);
+
+
     }
-    if (answer == "2")
+    else if (answer == "2")
     {
-    Process.GetCurrentProcess().Kill();
+        Console.WriteLine(json);
     }
+    else if(answer=="3")
+    {
+        Environment.Exit(0);
+
+    }
+}
+
+
 
 
 
